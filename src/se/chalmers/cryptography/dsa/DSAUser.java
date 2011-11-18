@@ -9,12 +9,34 @@ import java.math.BigInteger;
  * To change this template use File | Settings | File Templates.
  */
 public class DSAUser {
-    private final int P_BIT_LENGTH = 1024;
-    private final int Q_BIT_LENGTH = 160;
+    private final static int P_BIT_LENGTH = 1024;
+    private final static int Q_BIT_LENGTH = 160;
 
     private BigInteger[] domainParameters = new BigInteger[3];
     private BigInteger publicKey = null;
     private BigInteger privateKey = null;
+
+    public static boolean check(BigInteger p, BigInteger q, BigInteger g) {
+        if (g.compareTo(BigInteger.ONE) <= 0) return false;
+        if (p.bitLength() != P_BIT_LENGTH) return false;
+        if (q.bitLength() != Q_BIT_LENGTH) return false;
+
+        BigInteger pMinusOne = p.subtract(BigInteger.ONE);
+        if (pMinusOne.remainder(q).compareTo(BigInteger.ZERO) != 0) return false;
+
+        if (g.modPow(q, p).compareTo(BigInteger.ONE) != 0) return false;
+
+        for (int i = 0; i <= 8 ; i++) {
+            if (!p.isProbablePrime(100)) {
+                return false;
+            }
+            if (!q.isProbablePrime(100)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 
     public DSAUser(BigInteger p, BigInteger q, BigInteger g) {
         this.domainParameters[0] = p;
@@ -26,25 +48,8 @@ public class DSAUser {
         this.domainParameters[0] = p;
         this.domainParameters[1] = q;
         this.domainParameters[2] = g;
-        this.publicKey = x;
-        this.privateKey = y;
-    }
-
-    private boolean check(BigInteger p, BigInteger q, BigInteger g) {
-        if (p.bitLength() != this.P_BIT_LENGTH) return false;
-        if (q.bitLength() != this.Q_BIT_LENGTH) return false;
-
-        for (int i = 0; i <= 8 ; i++) {
-            if (!p.isProbablePrime(10000)) {
-                return false;
-            }
-            if (!q.isProbablePrime(10000)) {
-                return false;
-            }
-        }
-
-        return true;
-
+        this.privateKey = x;
+        this.publicKey = y;
     }
 
     public BigInteger getP() {
@@ -60,10 +65,10 @@ public class DSAUser {
     }
 
     public BigInteger getX() {
-        return this.publicKey;
+        return this.privateKey;
     }
 
     public BigInteger getY() {
-        return this.privateKey;
+        return this.publicKey;
     }
 }
