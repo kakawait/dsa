@@ -58,8 +58,9 @@ public class Parser {
             if (action.equals("genkey")) {
                 String n = (in.readLine().split("^n="))[1];
                 if (!n.matches("^[0-9]+$")) throw new Exception();
-                for (BigInteger key : dsa.generate(new BigInteger(n))) {
-                    System.out.println(key);
+                for (BigInteger[] pair : dsa.generate(new BigInteger(n))) {
+                    System.out.println("x=" + pair[0]);
+                    System.out.println("y=" + pair[1]);
                 }
             } else if (action.equals("sign")) {
 

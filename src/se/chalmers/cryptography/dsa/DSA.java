@@ -21,10 +21,13 @@ public class DSA {
         this.DSAUsers = new DSAUser(p, q, g, x, y);
     }
 
-    public BigInteger[] generate(BigInteger n) {
-        BigInteger[] keys = new BigInteger[n.intValue()];
+    public BigInteger[][] generate(BigInteger n) {
+        BigInteger[][] keys = new BigInteger[n.intValue()][];
         for (int i = 0; i < n.intValue(); i++) {
-            keys[i] = this.getG().modPow(this.generateX(), this.getP());
+            BigInteger[] pair = new BigInteger[2];
+            pair[0] = this.generateX();
+            pair[1] = this.getG().modPow(pair[0], this.getP());
+            keys[i] = pair;
         }
 
         return keys;

@@ -27,14 +27,8 @@ public class DSAUser {
 
         if (g.modPow(q, p).compareTo(BigInteger.ONE) != 0) return false;
 
-        for (int i = 0; i <= 8 ; i++) {
-            if (!p.isProbablePrime(100)) {
-                return false;
-            }
-            if (!q.isProbablePrime(100)) {
-                return false;
-            }
-        }
+        if (!p.isProbablePrime(20)) return false;
+        if (!q.isProbablePrime(20)) return false;
 
         return true;
     }
