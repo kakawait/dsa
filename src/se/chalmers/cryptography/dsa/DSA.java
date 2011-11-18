@@ -1,28 +1,23 @@
 package se.chalmers.cryptography.dsa;
 
+import java.math.BigInteger;
+import java.security.SecureRandom;
+
 /**
- * User: Thibaud Leprêtre
+ * User: kakawait <thibaud.lepretre@gmail.com>
  * Date: 17/11/11
  * Time: 16:34
  * To change this template use File | Settings | File Templates.
  */
-
-import java.math.BigInteger;
-import java.security.SecureRandom;
-
 public class DSA {
-    private final int Q_BIT_LENGTH = 160;
+    private DSAUser DSAUser;
 
-    private BigInteger[] domainParameters = new BigInteger[3];
-    private BigInteger publicKey;
-    private BigInteger privateKey;
+    public DSA(BigInteger p, BigInteger q, BigInteger g) {
+        this.DSAUser = new DSAUser(p, q, g);
+    }
 
     public DSA(BigInteger p, BigInteger q, BigInteger g, BigInteger x, BigInteger y) {
-        this.domainParameters[0] = p;
-        this.domainParameters[1] = q;
-        this.domainParameters[2] = g;
-        this.publicKey = x;
-        this.privateKey = y;
+        this.DSAUser = new DSAUser(p, q, g, x, y);
     }
 
     public BigInteger[] sign(String digestMessage) {
@@ -34,6 +29,7 @@ public class DSA {
         BigInteger[] signature = new BigInteger[2];
         signature[0] = r;
         signature[1] = s;
+
         return signature;
     }
 
@@ -61,23 +57,23 @@ public class DSA {
     }
 
     public BigInteger getP() {
-        return domainParameters[0];
+        return this.DSAUser.getP();
     }
 
     public BigInteger getQ() {
-        return domainParameters[1];
+        return this.DSAUser.getQ();
     }
 
     public BigInteger getG() {
-        return domainParameters[2];
+        return this.DSAUser.getG();
     }
 
     public BigInteger getX() {
-        return this.publicKey;
+        return this.DSAUser.getX();
     }
 
     public BigInteger getY() {
-        return this.privateKey;
+        return this.DSAUser.getY();
     }
 
     public static void main(String[] args) {
