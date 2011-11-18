@@ -9,8 +9,9 @@ import java.math.BigInteger;
  * To change this template use File | Settings | File Templates.
  */
 public class DSAUser {
-    private final static int P_BIT_LENGTH = 1024;
-    private final static int Q_BIT_LENGTH = 160;
+    public final static int P_BIT_LENGTH = 1024;
+    public final static int Q_BIT_LENGTH = 160;
+    public final static int SHA_BIT_LENGTH = 160;
 
     private BigInteger[] domainParameters = new BigInteger[3];
     private BigInteger publicKey = null;

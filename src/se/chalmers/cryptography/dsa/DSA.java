@@ -14,23 +14,24 @@ public class DSA {
     private DSAUser DSAUsers;
 
     public DSA(BigInteger p, BigInteger q, BigInteger g) {
-        if (DSAUser.check(p, q, g)) {
-            this.DSAUsers = new DSAUser(p, q, g);
-        } else {
-            System.exit(0);
-        }
+        this.DSAUsers = new DSAUser(p, q, g);
     }
 
     public DSA(BigInteger p, BigInteger q, BigInteger g, BigInteger x, BigInteger y) {
-        if (DSAUser.check(p, q, g)) {
-            this.DSAUsers = new DSAUser(p, q, g, x, y);
-        } else {
-            System.exit(0);
+        this.DSAUsers = new DSAUser(p, q, g, x, y);
+    }
+
+    public BigInteger[] generate(BigInteger n) {
+        BigInteger[] keys = new BigInteger[n.intValue()];
+        for (int i = 0; i < n.intValue(); i++) {
+            keys[i] = this.getG().modPow(this.generateX(), this.getP());
         }
+
+        return keys;
     }
 
     public BigInteger[] sign(String digestMessage) {
-        BigInteger z = new BigInteger(digestMessage.getBytes());
+        BigInteger z = new BigInteger(digestMessage, 16);
         BigInteger k = this.generateK();
         BigInteger r = this.getG().modPow(k, this.getP()).mod(this.getQ());
         BigInteger s = (k.modInverse(getQ()).multiply(z.add(getX().multiply(r)))).mod(getQ());
@@ -42,17 +43,29 @@ public class DSA {
         return signature;
     }
 
-    public boolean verify(BigInteger privateKey, String digestMessage, BigInteger r, BigInteger s) {
-        if(r.compareTo(this.getQ()) >= 0 || r.compareTo(BigInteger.ZERO) <= 0) return false;
-        if(s.compareTo(this.getQ()) >= 0 || s.compareTo(BigInteger.ZERO) <= 0) return false;
+    public boolean verify(BigInteger publicKey, String digestMessage, BigInteger r, BigInteger s) {
+        if (r.compareTo(this.getQ()) >= 0 || r.compareTo(BigInteger.ZERO) <= 0) return false;
+        if (s.compareTo(this.getQ()) >= 0 || s.compareTo(BigInteger.ZERO) <= 0) return false;
 
-        BigInteger z = new BigInteger(digestMessage.getBytes());
+        BigInteger z = new BigInteger(digestMessage, 16);
+        //if (z.bitLength() != DSAUser.SHA_BIT_LENGTH) return false;
         BigInteger w = s.modInverse(getQ());
         BigInteger u1 = z.multiply(w).mod(getQ());
         BigInteger u2 = r.multiply(w).mod(getQ());
-        BigInteger v = ((getG().modPow(u1, getP()).multiply(privateKey.modPow(u2, getP()))).mod(getP())).mod(getQ());
+        BigInteger v = ((this.getG().modPow(u1, this.getP())
+                .multiply(publicKey.modPow(u2, this.getP()))).mod(this.getP())).mod(this.getQ());
 
         return v.compareTo(r) == 0;
+    }
+
+    public BigInteger generateX() {
+        SecureRandom r = new SecureRandom();
+        BigInteger x;
+        do {
+            x = new BigInteger(getQ().bitLength(), r);
+        } while ((this.getQ().compareTo(x) < 1) || (x.compareTo(BigInteger.ZERO) < 1));
+
+        return x;
     }
 
     public BigInteger generateK() {
