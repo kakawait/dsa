@@ -37,7 +37,7 @@ public class DSA {
         BigInteger z = new BigInteger(digestMessage, 16);
         BigInteger k = this.generateK();
         BigInteger r = this.getG().modPow(k, this.getP()).mod(this.getQ());
-        BigInteger s = (k.modInverse(getQ()).multiply(z.add(getX().multiply(r)))).mod(getQ());
+        BigInteger s = (k.modInverse(this.getQ()).multiply(z.add(this.getX().multiply(r)))).mod(this.getQ());
 
         BigInteger[] signature = new BigInteger[2];
         signature[0] = r;
@@ -51,7 +51,6 @@ public class DSA {
         if (s.compareTo(this.getQ()) >= 0 || s.compareTo(BigInteger.ZERO) <= 0) return false;
 
         BigInteger z = new BigInteger(digestMessage, 16);
-        //if (z.bitLength() != DSAUser.SHA_BIT_LENGTH) return false;
         BigInteger w = s.modInverse(getQ());
         BigInteger u1 = z.multiply(w).mod(getQ());
         BigInteger u2 = r.multiply(w).mod(getQ());
@@ -97,7 +96,15 @@ public class DSA {
         return this.DSAUsers.getX();
     }
 
+    public void setX(BigInteger x) {
+        this.DSAUsers.setX(x);
+    }
+
     public BigInteger getY() {
         return this.DSAUsers.getY();
+    }
+
+    public void setY(BigInteger y) {
+        this.DSAUsers.setY(y);
     }
 }

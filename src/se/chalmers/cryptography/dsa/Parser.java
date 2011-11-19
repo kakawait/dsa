@@ -1,10 +1,9 @@
 package se.chalmers.cryptography.dsa;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigInteger;
-import java.security.MessageDigest;
+import java.util.ArrayList;
 
 /**
  * User: kakawait <thibaud.lepretre@gmail.com>
@@ -58,12 +57,28 @@ public class Parser {
             if (action.equals("genkey")) {
                 String n = (in.readLine().split("^n="))[1];
                 if (!n.matches("^[0-9]+$")) throw new Exception();
+                System.out.println("valid_group");
                 for (BigInteger[] pair : dsa.generate(new BigInteger(n))) {
                     System.out.println("x=" + pair[0]);
                     System.out.println("y=" + pair[1]);
                 }
             } else if (action.equals("sign")) {
-
+                String x = (in.readLine().split("^x="))[1];
+                String y = (in.readLine().split("^y="))[1];
+                if (!x.matches("^[0-9]+$") || !y.matches("^[0-9]+$")) throw new Exception();
+                ArrayList<String> d = new ArrayList<String>();
+                while ((line = in.readLine()) != null) {
+                    d.add(line.split("^D=")[1]);
+                    if (!d.get(d.size() - 1).matches("^[0-9A-Za-z]+$")) throw new Exception();
+                }
+                dsa.setX(new BigInteger(x));
+                dsa.setY(new BigInteger(y));
+                System.out.println("valid_group");
+                for (String digestMessage : d) {
+                    BigInteger[] signature = dsa.sign(digestMessage);
+                    System.out.println("r=" + signature[0]);
+                    System.out.println("s=" + signature[1]);
+                }
             } else if (action.equals("verify")) {
 
             }

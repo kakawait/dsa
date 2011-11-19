@@ -63,7 +63,15 @@ public class DSAUser {
         return this.privateKey;
     }
 
+    public void setX(BigInteger x) {
+        this.privateKey = x;
+    }
+
     public BigInteger getY() {
         return this.publicKey;
+    }
+
+    public void setY(BigInteger y) {
+        this.publicKey = y;
     }
 }
