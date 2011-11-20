@@ -1,14 +1,12 @@
 package se.chalmers.cryptography.dsa;
 
-import java.io.*;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 
 /**
- * User: kakawait <thibaud.lepretre@gmail.com>
+ * User: Thibaud Leprêtre <thibaud.lepretre@gmail.com>
  * Date: 17/11/11
  * Time: 16:34
- * To change this template use File | Settings | File Templates.
  */
 public class DSA {
     private DSAUser DSAUsers;

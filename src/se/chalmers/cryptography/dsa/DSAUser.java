@@ -3,15 +3,13 @@ package se.chalmers.cryptography.dsa;
 import java.math.BigInteger;
 
 /**
- * User: kakawait <thibaud.lepretre@gmail.com>
+ * User: Thibaud Leprêtre <thibaud.lepretre@gmail.com>
  * Date: 18/11/11
  * Time: 10:14
- * To change this template use File | Settings | File Templates.
  */
 public class DSAUser {
     public final static int P_BIT_LENGTH = 1024;
     public final static int Q_BIT_LENGTH = 160;
-    public final static int SHA_BIT_LENGTH = 160;
 
     private BigInteger[] domainParameters = new BigInteger[3];
     private BigInteger publicKey = null;
