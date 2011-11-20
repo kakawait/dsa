@@ -6,42 +6,36 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 
 /**
- * User: kakawait <thibaud.lepretre@gmail.com>
+ * User: Thibaud Leprêtre <thibaud.lepretre@gmail.com>
  * Date: 18/11/11
  * Time: 11:35
- * To change this template use File | Settings | File Templates.
+ * Parser works thanks to try/catch/finally statements. The principle is simple, if some parameters are
+ * wrong I just throw a new exception. When exception is catch I display "invalid_group".
+ * Moreover I use the standard input so in order to launch the program you have to do:
+ *      - dsa.jar < file.txt
+ *      - file.txt | dsa.jar
+ * Regarding the validation, I check:
+ *      - the parameter's order, p=39293.. then q=3892.. then g=3992...
+ *      - p, q and g must be a numeric value => /^[0-9]+$/
+ *      - use of DSAUser.check function that valid p, q and g
+ *      - test D to be a 40 char length with just number or letter => /^[0-9A-Za-z]{40}$/
+ *      - plus some other tests...
  */
 public class Parser {
     public static void main(String[] args) throws Exception {
-        /*DSA dsa = new DSA(
-                new BigInteger("102865584259843077175583195011997798900482038016705824136288380475734860009055428071534495956844807748416572686838253895244634687898659646424515259679129905513743899853971066468883670407530107234961085482225328667572772611162756643027105617873895021996158552984843708233824989792811721408577351617080369547993"),
-                new BigInteger("734415599462729831694143846331445277609193755927"),
-                new BigInteger("63615006880335642768473038477258757436464860136916565207798584167060621564899979263408565137993978149206751054438974059615983337126379668370747907507911540381031959187353048278562320341063050939775344313271013777131358834376209974551749493023310606751625276738876397935042130121966817767949476523717161640453"),
-                new BigInteger("339119201894965867922409227633199021527378715543"),
-                new BigInteger("1099906791313925528746008054081768734007884349815325963667520491768596235922636596649198172987598573083011790017146356061273962023338014420645127092468263770753970716461208880423045761205934804880887634821616587683235765408867072852094816664326084550730344050243082288308837441908172297994552279650972016922")
-        );
-        BigInteger[] signature = new BigInteger[2];
-        signature = dsa.sign("10B4D55F2376DBA00CE4A6AE2B122E9554035EF2");
-        System.out.println(signature[0]);
-        System.out.println(signature[1]);
-        boolean verify = dsa.verify(
-                new BigInteger("1099906791313925528746008054081768734007884349815325963667520491768596235922636596649198172987598573083011790017146356061273962023338014420645127092468263770753970716461208880423045761205934804880887634821616587683235765408867072852094816664326084550730344050243082288308837441908172297994552279650972016922"),
-                "C1CBB20237CF8C5F58F3302C91DDE80388C3A7D5",
-                signature[0],
-                signature[1]
-        );
-        System.out.println(verify); */
-
         BufferedReader in = null;
         try {
             in = new BufferedReader(new InputStreamReader(System.in));
             String line;
 
             String[] domainParameters = new String[3];
-
             domainParameters[0] = (in.readLine().split("^p="))[1];
             domainParameters[1] = (in.readLine().split("^q="))[1];
             domainParameters[2] = (in.readLine().split("^g="))[1];
+
+            System.out.println("p=" + domainParameters[0]);
+            System.out.println("q=" + domainParameters[1]);
+            System.out.println("g=" + domainParameters[2]);
 
             for (String domainParameter : domainParameters) {
                 if (!domainParameter.matches("^[0-9]+$")) throw new Exception();
@@ -69,7 +63,7 @@ public class Parser {
                 ArrayList<String> d = new ArrayList<String>();
                 while ((line = in.readLine()) != null) {
                     d.add(line.split("^D=")[1]);
-                    if (!d.get(d.size() - 1).matches("^[0-9A-Za-z]+$")) throw new Exception();
+                    if (!d.get(d.size() - 1).matches("^[0-9A-Za-z]{40}$")) throw new Exception();
                 }
                 dsa.setX(new BigInteger(x));
                 dsa.setY(new BigInteger(y));
@@ -80,16 +74,28 @@ public class Parser {
                     System.out.println("s=" + signature[1]);
                 }
             } else if (action.equals("verify")) {
+                String y = (in.readLine().split("^y="))[1];
+                if (!y.matches("^[0-9]+$")) throw new Exception();
+                boolean eof = false;
+                while (!eof) {
+                    line = in.readLine();
+                    if (line != null) {
+                        String d = (line.split("^D="))[1];
+                        String r = (in.readLine().split("^r="))[1];
+                        String s = (in.readLine().split("^s="))[1];
 
-            }
-
-
-            System.exit(0);
-            while ((line = in.readLine()) != null) {
-                System.out.println(line);
+                        if (dsa.verify(new BigInteger(y), d, new BigInteger(r), new BigInteger(s))) {
+                            System.out.println("signature_valid");
+                        } else {
+                            System.out.println("signature_invalid");
+                        }
+                    } else {
+                        eof = true;
+                    }
+                }
             }
         } catch (Exception e) {
-            throw e;
+            System.out.println("invalid_group");
         } finally {
             if (in != null) {
                 in.close();
