@@ -6,14 +6,13 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 
 /**
- * User: Thibaud Leprêtre <thibaud.lepretre@gmail.com>
- * Date: 18/11/11
- * Time: 11:35
+ * User: Thibaud Leprêtre <thibaud.lepretre@gmail.com>, Nicolas hubert <hubertn@efrei.fr>
+ * Date: 20/11/11
+ * Time: 18:35
  * Parser works thanks to try/catch/finally statements. The principle is simple, if some parameters are
  * wrong I just throw a new exception. When exception is catch I display "invalid_group".
  * Moreover I use the standard input so in order to launch the program you have to do:
- *      - dsa.jar < file.txt
- *      - file.txt | dsa.jar
+ *      - java -jar DSA.jar < file.txt
  * Regarding the validation, I check:
  *      - the parameter's order, p=39293.. then q=3892.. then g=3992...
  *      - p, q and g must be a numeric value => /^[0-9]+$/
@@ -51,7 +50,7 @@ public class Parser {
             if (action.equals("genkey")) {
                 String n = (in.readLine().split("^n="))[1];
                 if (!n.matches("^[0-9]+$")) throw new Exception();
-                System.out.println("valid_group");
+                System.out.println("valid_group"); // if the group is valid we print out this
                 for (BigInteger[] pair : dsa.generate(new BigInteger(n))) {
                     System.out.println("x=" + pair[0]);
                     System.out.println("y=" + pair[1]);
@@ -95,7 +94,7 @@ public class Parser {
                 }
             }
         } catch (Exception e) {
-            System.out.println("invalid_group");
+            System.out.println("invalid_group"); // If the parameter is not valid we print out this
         } finally {
             if (in != null) {
                 in.close();
